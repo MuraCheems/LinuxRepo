@@ -26,7 +26,7 @@ int main(){
     FILE *IN_FILE;
     FILE *OUT_FILE;
     IN_FILE = fopen(INPUT_FILE, "r");
-    OUT_FILE = fopen(OUTPUT_FILE, "r+");
+    OUT_FILE = fopen(OUTPUT_FILE, "w");
 
 
     
