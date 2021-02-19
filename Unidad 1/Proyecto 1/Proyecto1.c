@@ -135,6 +135,7 @@ void loaddb(){
         ptrbases = malloc(sizeof(basedatos));
         fscanf(IN_FILE,"%s %d %d", param1,&limite,&actualsize);
         strcpy(ptrbases -> nombre,param1);
+        ptrbases -> tamanomaximo = limite;
         ptrbases -> ptrestudiante = (estudiante*)malloc(sizeof(estudiante)*limite);
         
 
@@ -159,7 +160,7 @@ void savedb(){
         printf("NO fue posible crear el archivo?");
         exit(8);
         }
-        fprintf(OUT_FILE,"%s %d %d",OUTPUT_FILE,limite,actualsize);
+        fprintf(OUT_FILE,"%s %d %d \n",OUTPUT_FILE,ptrbases -> tamanomaximo,actualsize);
         for (size_t i = 0; i < actualsize; i++)
         {
             fprintf(OUT_FILE,"%d %s %d \n ",ptrbases -> ptrestudiante[i].cedulaestudiante,ptrbases -> ptrestudiante[i].nombreestudiante, ptrbases -> ptrestudiante[i].semestreestudiante);  
