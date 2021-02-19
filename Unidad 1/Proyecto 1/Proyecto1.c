@@ -43,11 +43,6 @@
     void readreg();
     void mkreg();
     
-   
-
-    
-    
-
 int main(int argc, char const *argv[])
 {
     
@@ -103,7 +98,17 @@ int main(int argc, char const *argv[])
     else if ((strncmp("exit", comando, 4) == 0))
     {
         while ( (c = getchar()) != '\n' && c != EOF ) { }
+        
+        printf("Seguro desea salir de la base de datos? y/n ? recuerda que se puede guardar la base de datos con savedb. \n");
+        scanf("%s", param1);
+
+
+       if ( ((strncmp("y",param1, 1) == 0)))
+       {
         bool=0;
+       }
+       else{}
+       
     }
     else
     {
