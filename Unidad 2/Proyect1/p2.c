@@ -60,11 +60,11 @@ int main(int argc, char const *argv[])
        vectorlineas[numerolineas-1-a]=auxlinea;
     }
 
-    OUT_FILE = fopen("Out1","w");
+    OUT_FILE = fopen("Out2","w");
 
     for (int i = 1; i < numerolineas; i++)
     {
-        fprintf(OUT_FILE,"%s  %d \n", vectorlineas[i].clave, vectorlineas[i].value);
+        fprintf(OUT_FILE,"%s  %d\n", vectorlineas[i].clave, vectorlineas[i].value);
     }
     fclose(OUT_FILE);
     free(vectorlineas);

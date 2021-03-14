@@ -69,7 +69,7 @@ int main(int argc, char const *argv[])
 
     }
 
-    OUT_FILE = fopen("Out2","w");
+    OUT_FILE = fopen("Out1","w");
 
     for (int i = 0; i < numerolineas-1; i++)
     {
@@ -78,3 +78,4 @@ int main(int argc, char const *argv[])
     fclose(OUT_FILE);
     free(vectorlineas);
     return EXIT_SUCCESS;
+}
