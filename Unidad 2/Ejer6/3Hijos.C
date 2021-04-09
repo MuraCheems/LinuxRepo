@@ -31,7 +31,7 @@
         {
             for (int i = 1; i < 11; i++)
             {
-                factorial=factoriali;
+                factorial=factorial*i;
 
                 printf("Fact(%d) = %d \n", i,factorial);
             }
