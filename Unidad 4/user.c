@@ -33,7 +33,7 @@
              break;
          }
          else{
-             printf("from server: %s\n",buf);
+             printf("%s\n",buf);
          }
      }
      printf("Terminate Pthread for reading\n");
@@ -51,10 +51,10 @@
 
      
 
-     printf("Ingresar el nombre del usuario");
+     printf("Ingresar el nombre del usuario\n");
      scanf("%s",msg);
      strcpy(username,msg);
-     strcat(msg,"dice :");
+     strcat(msg,":");
      pthread_t rxThreadId;
      struct client_t client;
 
@@ -98,7 +98,7 @@
          exit(EXIT_FAILURE);
      }
 
-     status=write(client.socket,username);
+     status=write(client.socket,username,strlen(username)+1);
      if (status==-1)
      {
         perror("Server write to cliente fails");
@@ -122,8 +122,7 @@
          }
 
          if( buf[ strlen(buf)-1 ] == '\n') buf[ strlen(buf) - 1 ] = 0;
-
-         strcat(send,buf);
+         strcat(copia,buf);
          status = write(client.socket,copia,strlen(copia)+1);
          if (status == -1)
          {

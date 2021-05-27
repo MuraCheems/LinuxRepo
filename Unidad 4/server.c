@@ -24,12 +24,13 @@
      int id;
  };
 
- struct client_t *client //APuntador del cliente
- pthread_t rxThreadId; //Hilo 
+ struct client_t *client; //APuntador del cliente
+ pthread_t *rxThreadId; //Hilo 
 
 
  void * readThread(void *arg){
      struct client_t *clientactual = ((struct client_t *)arg);
+     //printf("Llego aqui papi"); //PRUEBITA
      ssize_t numOfBytes;
      char buf[BUF_SIZE];
      int status;
@@ -52,12 +53,12 @@
                  idName=1;
                  strcpy(username,buf); //ALmacenamos el nombre del usuario que se conecto
                  strcpy(clientactual->username,username);
-                 strcat(buf, "Se ha unido al chat"); //Aqui avisamos quien se conecto
+                 strcat(buf, " Se ha unido al chat\n"); //Aqui avisamos quien se conecto
              }
              
-             for (int i = 0; i < 5; i++) //Igual al tamano de numerodeusuarios
+             for (int i = 1; i <= 5; i++) //Igual al tamano de numerodeusuarios
              {
-                 if (clienteactual.id != client[i-1].id && numerousuarios[i-1]!=0){
+                 if (clientactual->id != client[i-1].id && numerousuarios[i-1]!=0){
                      status = write(client[i-1].socket,buf,strlen(buf)+1);
                      if (status==-1)
                      {
@@ -68,19 +69,18 @@
 
                  
              }
-            else{
-             printf("from client: %s\n",buf);
+          
          }
 
          }
-     }
+     
      strcpy(buf, username);
-     strcat(buf,"Se ha desconectado del chat\n");
+     strcat(buf," Se ha desconectado del chat\n");
      printf("%s", buf);
 
-     for (int i = 0; i <= 5; i++)
+     for (int i = 1; i <= 5; i++)
      {
-         if (clienteactual.id != client[i-1].id && sillas[i-1]!=0)
+         if (clientactual->id != client[i-1].id && numerousuarios[i-1]!=0)
          {
              status=write(client[i-1].socket, buf,strlen(buf)+1);
              if (status==-1)
@@ -103,16 +103,13 @@
      return NULL;
  }
  int main(int argc, char *argv[]){
-
-     char buf[BUF_SIZE];
      int status;
      int enable = 1;
      int server_sd;
      int client_sd;
-     pthread_t rxThreadId;
-     struct client_t client;
-
+     rxThreadId = malloc(sizeof(pthread_t)*5); //Por el numero de clientes
      // 1. Ignore SIGPIPE
+     client= malloc(sizeof(struct client_t)*5);//por el numero de clientes
      signal(SIGPIPE, SIG_IGN);
 
      // 2. Create socket
@@ -157,50 +154,56 @@
 
      printf("Server listening\n");
 
-     while(1){
-         // 6. Accept:
-         printf("Waiting for a client\n");
-         client_sd = accept(server_sd, NULL, NULL);
 
-         printf("Client connected\n");
-         if(-1 == client_sd){
-             perror("Accept fails: ");
-             close(server_sd);
-             exit(EXIT_FAILURE);
-         }
-         // 7. Create a thread for receiving messages from client
-         client.socket = client_sd;
-         client.rxState = 1;
+    while (1)
+    {
+        int usernumber=0;
+        client_sd=accept(server_sd,NULL,NULL);
+        if (aux<5)
+        {
+            aux++;
+            printf("El cliente numero %d se ha conectado\n",aux);
+            if (client_sd==-1)
+            {
+                perror("Error aceptando al cliente");
+                close(server_sd);
+                exit(EXIT_FAILURE); //validamos en el caso que haya un error aceptando al cliente
+            }
+            
+            for (int i = 1; i <=5; i++)
+            {
+                if (numerousuarios[i-1]==0)
+                {
+                    numerousuarios[i-1]=1;
+                    usernumber=i;
+                    break;
+                }
+                
+            }
 
-         printf("Create Pthread for reading\n");
-         status = pthread_create(&rxThreadId,NULL,&readThread,&client);
-         if(-1 == status){
-             perror("Pthread read fails: ");
-             close(server_sd);
-             exit(EXIT_FAILURE);
-         }
+            client[usernumber-1].socket=client_sd;
+            client[usernumber-1].rxState=1;
+            client[usernumber-1].id=usernumber;
+            //ASIGNO VALORES AL OBJETO DE CLIENTE
+            status=pthread_create(&(rxThreadId[usernumber-1]),NULL,&readThread,&(client[usernumber-1])); //DEdico uno de los hilos del vector al cliente
 
+            
+        
+        
+    } //EN EL CASO QUE EL SERVIDOR ESTE LLENO
+    else{
+        char buf[BUF_SIZE];
+        int status;
+        strcpy(buf,"Server full\n");
+        status=write(client_sd,buf,strlen(buf)+1);
+        if(status==-1){
+        perror("Error mandando mensaje al cliente");
+        break;
+        }
+        close(client_sd);
+    }
 
-         while(1){
-             if(0 == client.rxState){
-                 printf("Client closed the socket\n");
-                 break;
-             }
-
-             if ( fgets(buf,BUF_SIZE,stdin) == NULL){
-                 printf("Fgets NULL\n");
-             }
-
-             if( buf[ strlen(buf)-1 ] == '\n') buf[ strlen(buf) - 1 ] = 0;
-
-             status = write(client.socket, buf, strlen(buf)+1);
-             if(-1 == status){
-                 perror("Server write to client fails: ");
-                 break;
-             }
-         }
-         close(client.socket);
-     }
-
-     exit(EXIT_SUCCESS);
+    
+ }
+ return 0;
  }
